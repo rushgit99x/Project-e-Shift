@@ -4,10 +4,12 @@ using e_Shift.Repository.Interface;
 using e_Shift.Repository.Service;
 using e_Shift.Repository.Services;
 using FontAwesome.Sharp;
+using MySql.Data.MySqlClient;
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using e_Shift.Config; // Ensure this namespace is included for DBConnection
 
 namespace e_Shift.Forms
 {
@@ -31,6 +33,11 @@ namespace e_Shift.Forms
             this.ControlBox = false;
             this.DoubleBuffered = true;
             this.MaximizedBounds = Screen.FromHandle(this.Handle).WorkingArea;
+
+            // Load dashboard data on form initialization
+            LoadDashboardData();
+            // Initialize auto-refresh timer
+            InitializeAutoRefresh();
         }
 
         // Structs
@@ -106,15 +113,206 @@ namespace e_Shift.Forms
             iconCurrentChildForm.IconChar = IconChar.Home;
             iconCurrentChildForm.IconColor = Color.MediumPurple;
             lblTitleChildForm.Text = "Home";
+            LoadDashboardData(); // Refresh data when resetting to home
+        }
+
+        // Database methods from AdminSummeryDashboard
+        private void LoadDashboardData()
+        {
+            try
+            {
+                // Load all dashboard statistics
+                lblNewJobs.Text = GetNewJobsCount().ToString();
+                lblActiveJobs.Text = GetActiveJobsCount().ToString();
+                lblCompletedJobs.Text = GetCompletedJobsCount().ToString();
+                lblTotalCustomers.Text = GetTotalCustomersCount().ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading dashboard data: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private int GetNewJobsCount()
+        {
+            int count = 0;
+            string query = "SELECT COUNT(*) FROM jobs WHERE Status = 'Pending'";
+
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(DBConnection.ConnectionString))
+                {
+                    connection.Open();
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        object result = command.ExecuteScalar();
+                        count = Convert.ToInt32(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error retrieving new jobs count: {ex.Message}", "Database Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return count;
+        }
+
+        private int GetActiveJobsCount()
+        {
+            int count = 0;
+            string query = "SELECT COUNT(*) FROM jobs WHERE Status IN ('Accepted', 'In_Progress')";
+
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(DBConnection.ConnectionString))
+                {
+                    connection.Open();
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        object result = command.ExecuteScalar();
+                        count = Convert.ToInt32(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error retrieving active jobs count: {ex.Message}", "Database Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return count;
+        }
+
+        private int GetCompletedJobsCount()
+        {
+            int count = 0;
+            string query = "SELECT COUNT(*) FROM jobs WHERE Status = 'Completed'";
+
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(DBConnection.ConnectionString))
+                {
+                    connection.Open();
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        object result = command.ExecuteScalar();
+                        count = Convert.ToInt32(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error retrieving completed jobs count: {ex.Message}", "Database Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return count;
+        }
+
+        private int GetTotalCustomersCount()
+        {
+            int count = 0;
+            string query = "SELECT COUNT(*) FROM customers";
+
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(DBConnection.ConnectionString))
+                {
+                    connection.Open();
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        object result = command.ExecuteScalar();
+                        count = Convert.ToInt32(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error retrieving total customers count: {ex.Message}", "Database Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return count;
+        }
+
+        // Timer-based auto-refresh
+        private Timer refreshTimer;
+
+        private void InitializeAutoRefresh()
+        {
+            refreshTimer = new Timer();
+            refreshTimer.Interval = 30000; // Refresh every 30 seconds
+            refreshTimer.Tick += RefreshTimer_Tick;
+            refreshTimer.Start();
+        }
+
+        private void RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            LoadDashboardData();
+        }
+
+        // Form closing event to dispose timer
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            refreshTimer?.Stop();
+            refreshTimer?.Dispose();
+            base.OnFormClosing(e);
+        }
+
+        // Event handlers for label clicks
+        private void lblNewJobs_Click(object sender, EventArgs e)
+        {
+            // Show details or navigate to new jobs view
+            ActivateButton(btnJobs, RGBColors.color2); // Highlight Jobs button
+            OpenChildForm(new AdminJobs()); // Open AdminJobs form for detailed view
+            // Optional: Show a message box with the count
+            MessageBox.Show($"New Jobs: {lblNewJobs.Text}", "Job Details",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void lblActiveJobs_Click(object sender, EventArgs e)
+        {
+            // Show details or navigate to active jobs view
+            ActivateButton(btnJobs, RGBColors.color2); // Highlight Jobs button
+            OpenChildForm(new AdminJobs()); // Open AdminJobs form for detailed view
+            MessageBox.Show($"Active Jobs: {lblActiveJobs.Text}", "Job Details",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void lblCompletedJobs_Click(object sender, EventArgs e)
+        {
+            // Show details or navigate to completed jobs view
+            ActivateButton(btnJobs, RGBColors.color2); // Highlight Jobs button
+            OpenChildForm(new AdminJobs()); // Open AdminJobs form for detailed view
+            MessageBox.Show($"Completed Jobs: {lblCompletedJobs.Text}", "Job Details",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void lblTotalCustomers_Click(object sender, EventArgs e)
+        {
+            // Show details or navigate to customers view
+            ActivateButton(btnUserManagement, RGBColors.color4); // Highlight User Management button
+            IAdminManageRepository adminRepository = new AdminManageRepository();
+            IAdminManageService adminService = new AdminManageService(adminRepository);
+            OpenChildForm(new AdminUserManagement(adminService)); // Open AdminUserManagement form
+            MessageBox.Show($"Total Customers: {lblTotalCustomers.Text}", "Customer Details",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         // Events
         private void btnDashboard_Click(object sender, EventArgs e)
         {
-            // Instead of opening AdminDashboard, reset to home state
-            //Reset();
             ActivateButton(sender, RGBColors.color2);
-            OpenChildForm(new AdminSummeryDashboard());
+            LoadDashboardData(); // Refresh data when dashboard button is clicked
+            if (currentChildForm != null)
+            {
+                currentChildForm.Close();
+                currentChildForm = null;
+                lblTitleChildForm.Text = "Dashboard";
+            }
         }
 
         private void btnJobs_Click(object sender, EventArgs e)
@@ -125,24 +323,18 @@ namespace e_Shift.Forms
 
         private void btnLoadManagement_Click(object sender, EventArgs e)
         {
-            //ActivateButton(sender, RGBColors.color3);
-            //OpenChildForm(new AdminLoadManagement());
             ActivateButton(sender, RGBColors.color3);
             ILoadRepository loadRepository = new LoadRepository();
             ILoadService loadService = new LoadService(loadRepository);
-            var loadManagementForm = new AdminLoadManagement(loadService);
-            OpenChildForm(loadManagementForm); // Replace the parameterless call with the injected instance
+            OpenChildForm(new AdminLoadManagement(loadService));
         }
 
         private void btnUserManagement_Click(object sender, EventArgs e)
         {
-            //ActivateButton(sender, RGBColors.color4);
-            //OpenChildForm(new AdminUserManagement());
             ActivateButton(sender, RGBColors.color4);
             IAdminManageRepository adminRepository = new AdminManageRepository();
             IAdminManageService adminService = new AdminManageService(adminRepository);
-            var adminUserManagementForm = new AdminUserManagement(adminService);
-            OpenChildForm(adminUserManagementForm);
+            OpenChildForm(new AdminUserManagement(adminService));
         }
 
         private void btnTransportUnits_Click(object sender, EventArgs e)
@@ -153,37 +345,19 @@ namespace e_Shift.Forms
 
         private void btnProducts_Click(object sender, EventArgs e)
         {
-            //ActivateButton(sender, RGBColors.color6);
-            //OpenChildForm(new AdminProducts());
             ActivateButton(sender, RGBColors.color6);
             IProductRepository productRepository = new ProductRepository();
             IProductService productService = new ProductService(productRepository);
-            var adminProductsForm = new AdminProducts(productService);
-            OpenChildForm(adminProductsForm); // Replace the parameterless call with the injected instance
+            OpenChildForm(new AdminProducts(productService));
         }
 
         private void btnReports_Click(object sender, EventArgs e)
         {
-            //ActivateButton(sender, RGBColors.color1);
-            //OpenChildForm(new AdminReports());
             ActivateButton(sender, RGBColors.color1);
             IReportRepository reportRepository = new ReportRepository();
             IReportService reportService = new ReportService(reportRepository);
-            var adminReportsForm = new AdminReports(reportService);
-            OpenChildForm(adminReportsForm); // Replace the parameterless call with the injected instance
+            OpenChildForm(new AdminReports(reportService));
         }
-
-        //private void btnNotifications_Click(object sender, EventArgs e)
-        //{
-        //    ActivateButton(sender, RGBColors.color2);
-        //    OpenChildForm(new AdminNotifications());
-        //}
-
-        //private void btnSettings_Click(object sender, EventArgs e)
-        //{
-        //    ActivateButton(sender, RGBColors.color3);
-        //    OpenChildForm(new AdminSettings());
-        //}
 
         private void btnHome_Click(object sender, EventArgs e)
         {
@@ -215,6 +389,10 @@ namespace e_Shift.Forms
         private void btnMinimize_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void panelDesktop_Paint(object sender, PaintEventArgs e)
+        {
         }
     }
 }

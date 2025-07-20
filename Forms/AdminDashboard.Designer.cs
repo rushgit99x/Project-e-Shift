@@ -46,11 +46,18 @@
             this.iconCurrentChildForm = new FontAwesome.Sharp.IconPictureBox();
             this.panelShadow = new System.Windows.Forms.Panel();
             this.panelDesktop = new System.Windows.Forms.Panel();
+            this.lblCompletedJobs = new System.Windows.Forms.Label();
+            this.lblTotalCustomers = new System.Windows.Forms.Label();
+            this.lblActiveJobs = new System.Windows.Forms.Label();
+            this.lblNewJobs = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panelMenu.SuspendLayout();
             this.panelLogo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.btnHome)).BeginInit();
             this.panelTitleBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.iconCurrentChildForm)).BeginInit();
+            this.panelDesktop.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // panelMenu
@@ -330,10 +337,73 @@
             // 
             this.panelDesktop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.panelDesktop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(33)))), ((int)(((byte)(74)))));
+            this.panelDesktop.Controls.Add(this.lblCompletedJobs);
+            this.panelDesktop.Controls.Add(this.lblTotalCustomers);
+            this.panelDesktop.Controls.Add(this.lblActiveJobs);
+            this.panelDesktop.Controls.Add(this.lblNewJobs);
+            this.panelDesktop.Controls.Add(this.pictureBox1);
             this.panelDesktop.Location = new System.Drawing.Point(222, 84);
             this.panelDesktop.Name = "panelDesktop";
             this.panelDesktop.Size = new System.Drawing.Size(778, 616);
             this.panelDesktop.TabIndex = 3;
+            // 
+            // lblCompletedJobs
+            // 
+            this.lblCompletedJobs.AutoSize = true;
+            this.lblCompletedJobs.BackColor = System.Drawing.Color.White;
+            this.lblCompletedJobs.Font = new System.Drawing.Font("Calibri", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCompletedJobs.Location = new System.Drawing.Point(411, 393);
+            this.lblCompletedJobs.Name = "lblCompletedJobs";
+            this.lblCompletedJobs.Size = new System.Drawing.Size(83, 97);
+            this.lblCompletedJobs.TabIndex = 9;
+            this.lblCompletedJobs.Text = "0";
+            this.lblCompletedJobs.Click += new System.EventHandler(this.lblCompletedJobs_Click);
+            // 
+            // lblTotalCustomers
+            // 
+            this.lblTotalCustomers.AutoSize = true;
+            this.lblTotalCustomers.BackColor = System.Drawing.Color.White;
+            this.lblTotalCustomers.Font = new System.Drawing.Font("Calibri", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTotalCustomers.Location = new System.Drawing.Point(34, 393);
+            this.lblTotalCustomers.Name = "lblTotalCustomers";
+            this.lblTotalCustomers.Size = new System.Drawing.Size(83, 97);
+            this.lblTotalCustomers.TabIndex = 8;
+            this.lblTotalCustomers.Text = "0";
+            this.lblTotalCustomers.Click += new System.EventHandler(this.lblTotalCustomers_Click);
+            // 
+            // lblActiveJobs
+            // 
+            this.lblActiveJobs.AutoSize = true;
+            this.lblActiveJobs.BackColor = System.Drawing.Color.White;
+            this.lblActiveJobs.Font = new System.Drawing.Font("Calibri", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblActiveJobs.Location = new System.Drawing.Point(411, 154);
+            this.lblActiveJobs.Name = "lblActiveJobs";
+            this.lblActiveJobs.Size = new System.Drawing.Size(83, 97);
+            this.lblActiveJobs.TabIndex = 7;
+            this.lblActiveJobs.Text = "0";
+            this.lblActiveJobs.Click += new System.EventHandler(this.lblActiveJobs_Click);
+            // 
+            // lblNewJobs
+            // 
+            this.lblNewJobs.AutoSize = true;
+            this.lblNewJobs.BackColor = System.Drawing.Color.White;
+            this.lblNewJobs.Font = new System.Drawing.Font("Calibri", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNewJobs.Location = new System.Drawing.Point(48, 154);
+            this.lblNewJobs.Name = "lblNewJobs";
+            this.lblNewJobs.Size = new System.Drawing.Size(83, 97);
+            this.lblNewJobs.TabIndex = 6;
+            this.lblNewJobs.Text = "0";
+            this.lblNewJobs.Click += new System.EventHandler(this.lblNewJobs_Click);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(-1, 1);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(780, 615);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 5;
+            this.pictureBox1.TabStop = false;
             // 
             // AdminDashboard
             // 
@@ -355,6 +425,9 @@
             this.panelTitleBar.ResumeLayout(false);
             this.panelTitleBar.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.iconCurrentChildForm)).EndInit();
+            this.panelDesktop.ResumeLayout(false);
+            this.panelDesktop.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -378,5 +451,10 @@
         private System.Windows.Forms.Button btnMinimize;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Panel panelDesktop;
+        private System.Windows.Forms.Label lblCompletedJobs;
+        private System.Windows.Forms.Label lblTotalCustomers;
+        private System.Windows.Forms.Label lblActiveJobs;
+        private System.Windows.Forms.Label lblNewJobs;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
